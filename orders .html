@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS MARKET // My Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020509;--panel:#080f1e;--panel2:#0a1628;--border:#0e2d52;--border2:#1a4a7a;--cyan:#00e5ff;--pink:#ff0060;--green:#00ff8c;--yellow:#ffd700;--amber:#ff9500;--text:#b8cfe0;--muted:#3a5570;--white:#eaf4ff;--gc:0 0 22px rgba(0,229,255,.45);--gp:0 0 22px rgba(255,0,96,.45);--gg:0 0 16px rgba(0,255,140,.4)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9000}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:56px 56px;pointer-events:none;z-index:0}
+
+nav{position:sticky;top:0;z-index:500;background:rgba(2,5,9,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 1.5rem;gap:1rem}
+.logo{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--cyan);letter-spacing:.18em;text-decoration:none;text-shadow:var(--gc)}
+.logo em{color:var(--pink);font-style:normal}
+.nav-spacer{flex:1}
+.nav-links{display:flex;gap:.75rem}
+.nav-link{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.1em;color:var(--muted);text-decoration:none;padding:.4rem .7rem;border:1px solid transparent;transition:all .2s}
+.nav-link:hover{color:var(--cyan);border-color:var(--border)}
+.nav-link.active{color:var(--amber);border-color:var(--amber)}
+.btn-cart{font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;letter-spacing:.12em;padding:.44rem 1.1rem;background:transparent;border:1px solid var(--cyan);color:var(--cyan);text-decoration:none;position:relative;transition:all .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.btn-cart:hover{background:var(--cyan);color:var(--bg);box-shadow:var(--gc)}
+.cart-badge{position:absolute;top:-8px;right:-8px;background:var(--pink);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-family:'Share Tech Mono',monospace;box-shadow:var(--gp)}
+
+.page-wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.page-title{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;color:var(--white);letter-spacing:.08em;margin-bottom:.3rem}
+.page-title span{color:var(--cyan)}
+.page-sub{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em;margin-bottom:2rem}
+
+/* ORDER CARDS */
+.order-card{background:var(--panel2);border:1px solid var(--border);margin-bottom:1.2rem;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));transition:border-color .2s;animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.order-card:hover{border-color:var(--border2)}
+
+.order-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:.5rem;cursor:pointer}
+.order-id{font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;color:var(--cyan);letter-spacing:.1em}
+.order-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+.order-meta-item{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.1em}
+.order-meta-item b{color:var(--text)}
+.order-status{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.12em;padding:.25rem .7rem;border:1px solid var(--green);color:var(--green)}
+.order-total-badge{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--white)}
+.toggle-arrow{font-size:.8rem;color:var(--muted);transition:transform .3s}
+.order-card.open .toggle-arrow{transform:rotate(180deg)}
+
+.order-body{display:none;padding:1.25rem}
+.order-card.open .order-body{display:block}
+
+.items-mini{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.item-mini-row{display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:.65rem;padding:.4rem 0;border-bottom:1px solid var(--border)}
+.item-mini-row:last-child{border:none}
+.item-mini-row .n{color:var(--text);flex:1}
+.item-mini-row .q{color:var(--muted);margin:0 1rem}
+.item-mini-row .p{color:var(--green);white-space:nowrap}
+
+.order-footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.order-addr{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.08em;line-height:1.5;flex:1;min-width:200px}
+.order-addr b{color:var(--text)}
+.order-pay{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.1em}
+.order-pay .lbl{color:var(--muted)}
+.order-pay .val{color:var(--amber);font-size:.72rem}
+
+.reorder-btn{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.1em;padding:.4rem .9rem;background:transparent;border:1px solid var(--cyan);color:var(--cyan);cursor:pointer;transition:all .2s;text-decoration:none}
+.reorder-btn:hover{background:rgba(0,229,255,.08)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:5rem 2rem;position:relative;z-index:1}
+.empty-icon{font-size:4rem;margin-bottom:1rem}
+.empty-state h2{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--white);letter-spacing:.1em;margin-bottom:.8rem}
+.empty-state p{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.15em;margin-bottom:1.5rem}
+.btn-shop{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:.15em;padding:.7rem 2rem;background:linear-gradient(135deg,var(--cyan),#0090ff);color:var(--bg);text-decoration:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));display:inline-block;transition:box-shadow .2s}
+.btn-shop:hover{box-shadow:var(--gc)}
+
+.section-head{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.3em;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+
+footer{position:relative;z-index:1;text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">NX<em>.</em>MKT</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">CATALOG</a>
+    <a href="/wishlist" class="nav-link">♡ WISHLIST</a>
+    <a href="/orders" class="nav-link active">MY ORDERS</a>
+  </div>
+  <a href="/cart" class="btn-cart">
+    🛒 CART
+    {% if cart_count > 0 %}
+    <span class="cart-badge">{{ cart_count }}</span>
+    {% endif %}
+  </a>
+</nav>
+
+<div class="page-wrap">
+  <h1 class="page-title">MY <span>ORDERS</span></h1>
+  <p class="page-sub">{{ orders|length }} ORDER{{ 's' if orders|length != 1 else '' }} PLACED · FULL HISTORY</p>
+
+  {% if orders %}
+  <p class="section-head">ORDER HISTORY // {{ orders|length }} RECORDS</p>
+
+  {% for order in orders %}
+  <div class="order-card" id="oc-{{ loop.index }}">
+    <div class="order-header" onclick="toggleOrder('oc-{{ loop.index }}')">
+      <div>
+        <p class="order-id">{{ order.id }}</p>
+        <div class="order-meta" style="margin-top:.3rem">
+          <span class="order-meta-item">📅 <b>{{ order.date }}</b></span>
+          <span class="order-meta-item">📦 <b>{{ order.items|length }} ITEM{{ 's' if order.items|length != 1 else '' }}</b></span>
+          <span class="order-meta-item">💳 <b>{{ order.payment }}</b></span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <span class="order-status">{{ order.status }}</span>
+        <span class="order-total-badge">₹{{ order.grand_total|int }}</span>
+        <span class="toggle-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="order-body">
+      <div class="items-mini">
+        {% for item in order.items %}
+        <div class="item-mini-row">
+          <span class="n">{{ item.name }}</span>
+          <span class="q">× {{ item.qty }}</span>
+          <span class="p">₹{{ item.subtotal|int }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="order-footer-row">
+        <div class="order-addr">
+          <b>DELIVERY ADDRESS</b><br>
+          {{ order.address }}<br>
+          {{ order.name }} · {{ order.phone }}
+        </div>
+        <div class="order-pay">
+          <p class="lbl">PAYMENT</p>
+          <p class="val">{{ order.payment }}</p>
+          <p class="lbl" style="margin-top:.4rem">TOTAL PAID</p>
+          <p class="val" style="color:var(--white);font-size:.9rem">₹{{ order.grand_total|int }}</p>
+        </div>
+        <a href="/" class="reorder-btn">🔄 SHOP AGAIN</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2>NO ORDERS YET</h2>
+    <p>YOU HAVEN'T PLACED ANY ORDERS<br>GO EXPLORE THE CATALOG!</p>
+    <a href="/" class="btn-shop">START SHOPPING</a>
+  </div>
+  {% endif %}
+</div>
+
+<footer>NEXUS MARKET SYSTEMS &mdash; {{ year }}</footer>
+
+<script>
+function toggleOrder(id){
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+// Open first order by default
+const first = document.querySelector('.order-card');
+if(first) first.classList.add('open');
+</script>
+</body>
+</html>

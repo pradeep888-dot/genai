@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS MARKET // Cart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020509;--panel:#080f1e;--panel2:#0a1628;--border:#0e2d52;--border2:#1a4a7a;--cyan:#00e5ff;--pink:#ff0060;--green:#00ff8c;--yellow:#ffd700;--amber:#ff9500;--text:#b8cfe0;--muted:#3a5570;--white:#eaf4ff;--gc:0 0 22px rgba(0,229,255,.45);--gp:0 0 22px rgba(255,0,96,.45);--gg:0 0 16px rgba(0,255,140,.4)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9000}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:56px 56px;pointer-events:none;z-index:0}
+
+nav{position:sticky;top:0;z-index:500;background:rgba(2,5,9,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 1.5rem;gap:1rem}
+.logo{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;color:var(--cyan);letter-spacing:.18em;text-decoration:none;text-shadow:var(--gc)}
+.logo em{color:var(--pink);font-style:normal}
+.nav-spacer{flex:1}
+.nav-links{display:flex;gap:.75rem;align-items:center}
+.nav-link{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.1em;color:var(--muted);text-decoration:none;padding:.4rem .7rem;border:1px solid transparent;transition:all .2s}
+.nav-link:hover{color:var(--cyan);border-color:var(--border)}
+.nav-link.active{color:var(--amber);border-color:var(--amber)}
+.btn-back{font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;letter-spacing:.12em;padding:.44rem 1.1rem;background:transparent;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:all .2s;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.btn-back:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:var(--gc)}
+
+.page-wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:2rem 1.5rem 5rem}
+.page-title{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--white);letter-spacing:.08em;margin-bottom:.3rem}
+.page-title span{color:var(--cyan)}
+.page-sub{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.2em;margin-bottom:2rem}
+
+/* FREE DELIVERY BANNER */
+.delivery-banner{background:linear-gradient(135deg,rgba(0,255,140,.08),rgba(0,229,255,.05));border:1px solid var(--green);padding:.75rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.delivery-banner.earned{border-color:var(--green);background:rgba(0,255,140,.06)}
+.delivery-banner p{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--green);letter-spacing:.15em}
+.progress-bar{flex:1;max-width:200px;height:4px;background:var(--border);position:relative;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .5s ease}
+
+/* CART LAYOUT */
+.cart-layout{display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start}
+@media(max-width:768px){.cart-layout{grid-template-columns:1fr}}
+
+/* ITEMS */
+.cart-items-panel{display:flex;flex-direction:column;gap:1rem}
+.section-head{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.3em;margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.cart-item{background:var(--panel2);border:1px solid var(--border);padding:1.1rem 1.25rem;position:relative;transition:border-color .2s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.cart-item:hover{border-color:var(--border2)}
+.cart-item-grid{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}
+.item-icon{width:56px;height:56px;background:rgba(0,229,255,.06);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.item-info{}
+.item-cat{font-family:'Share Tech Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:.18em}
+.item-name{font-family:'Orbitron',monospace;font-size:.88rem;font-weight:700;color:var(--white);letter-spacing:.04em;margin:.2rem 0 .4rem}
+.item-price-row{display:flex;align-items:center;gap:.6rem}
+.item-price{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--green)}
+.item-orig{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);text-decoration:line-through}
+.item-disc{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--amber)}
+.item-controls{display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.qty-row{display:flex;align-items:center;gap:.4rem;border:1px solid var(--border2)}
+.qty-btn{background:var(--panel);border:none;color:var(--cyan);width:30px;height:30px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:'Share Tech Mono',monospace;text-decoration:none}
+.qty-btn:hover{background:rgba(0,229,255,.1)}
+.qty-val{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--white);width:28px;text-align:center}
+.item-subtotal{font-family:'Share Tech Mono',monospace;font-size:1rem;color:var(--yellow);letter-spacing:.05em}
+.remove-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.12em;transition:color .2s;padding:.2rem;text-decoration:none}
+.remove-btn:hover{color:var(--pink)}
+.item-badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.52rem;padding:.15rem .4rem;background:var(--amber);color:var(--bg);letter-spacing:.1em;margin-left:.4rem}
+.item-badge.new{background:var(--green)}
+.item-badge.hot{background:#ff4444;color:#fff}
+
+/* CLEAR CART */
+.clear-btn{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--muted);cursor:pointer;border:1px solid var(--border);background:none;padding:.35rem .75rem;transition:all .2s;margin-top:.5rem;text-decoration:none;display:inline-block}
+.clear-btn:hover{border-color:var(--pink);color:var(--pink)}
+
+/* SUMMARY PANEL */
+.summary-panel{background:var(--panel2);border:1px solid var(--border);padding:1.5rem;position:sticky;top:80px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.summary-title{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;color:var(--white);letter-spacing:.1em;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;font-family:'Share Tech Mono',monospace;font-size:.7rem}
+.summary-row .lbl{color:var(--muted);letter-spacing:.12em}
+.summary-row .val{color:var(--text)}
+.summary-row.discount .val{color:var(--green)}
+.summary-row.delivery .val{color:var(--cyan)}
+.summary-divider{height:1px;background:var(--border);margin:1rem 0}
+.summary-total{display:flex;justify-content:space-between;align-items:center;font-family:'Orbitron',monospace;margin-bottom:1.2rem}
+.summary-total .lbl{font-size:.75rem;color:var(--muted);letter-spacing:.12em}
+.summary-total .amt{font-size:1.4rem;font-weight:900;color:var(--white)}
+.summary-total .amt sup{font-size:.8rem;color:var(--muted)}
+.saved-tag{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--green);letter-spacing:.12em;margin-bottom:1.2rem;padding:.4rem .6rem;border:1px solid rgba(0,255,140,.2);background:rgba(0,255,140,.04)}
+
+.btn-checkout{display:block;width:100%;font-family:'Orbitron',monospace;font-size:.75rem;font-weight:700;letter-spacing:.15em;padding:.85rem 1rem;background:linear-gradient(135deg,var(--amber),var(--yellow));color:var(--bg);border:none;cursor:pointer;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));transition:box-shadow .2s,transform .15s;text-align:center;text-decoration:none;margin-bottom:.8rem}
+.btn-checkout:hover{box-shadow:0 0 24px rgba(255,213,0,.4);transform:scale(1.02)}
+.btn-continue{display:block;width:100%;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.15em;padding:.6rem 1rem;background:transparent;border:1px solid var(--border2);color:var(--text);text-decoration:none;text-align:center;transition:all .2s}
+.btn-continue:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.trust-badges{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.trust-badge{font-family:'Share Tech Mono',monospace;font-size:.52rem;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:.3rem}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:5rem 2rem;position:relative;z-index:1}
+.empty-icon{font-size:4rem;margin-bottom:1rem}
+.empty-state h2{font-family:'Orbitron',monospace;font-size:1.2rem;color:var(--white);letter-spacing:.1em;margin-bottom:.8rem}
+.empty-state p{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.15em;margin-bottom:1.5rem}
+.btn-shop{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:.15em;padding:.7rem 2rem;background:linear-gradient(135deg,var(--cyan),#0090ff);color:var(--bg);text-decoration:none;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));transition:box-shadow .2s;display:inline-block}
+.btn-shop:hover{box-shadow:var(--gc)}
+
+footer{position:relative;z-index:1;text-align:center;padding:1.5rem;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.2em}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">NX<em>.</em>MKT</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">CATALOG</a>
+    <a href="/wishlist" class="nav-link">♡ WISHLIST</a>
+    <a href="/orders" class="nav-link">ORDERS</a>
+    <a href="/cart" class="nav-link active">🛒 CART ({{ cart_count }})</a>
+  </div>
+  <a href="/" class="btn-back">← CONTINUE SHOPPING</a>
+</nav>
+
+{% if cart %}
+<div class="page-wrap">
+  <h1 class="page-title">YOUR <span>CART</span></h1>
+  <p class="page-sub">{{ cart_count }} ITEM{{ 's' if cart_count != 1 else '' }} READY TO DEPLOY</p>
+
+  <!-- Delivery Progress -->
+  {% if free_delivery %}
+  <div class="delivery-banner earned">
+    <p>🎉 YOU HAVE FREE DELIVERY!</p>
+    <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+    <p style="color:var(--cyan)">FREE</p>
+  </div>
+  {% else %}
+  <div class="delivery-banner">
+    <p>Add ₹{{ threshold }} more for FREE DELIVERY</p>
+    <div class="progress-bar"><div class="progress-fill" style="width:{{ ((999-threshold)/999*100)|int }}%"></div></div>
+    <p>₹{{ threshold }} left</p>
+  </div>
+  {% endif %}
+
+  <div class="cart-layout">
+    <!-- ITEMS -->
+    <div class="cart-items-panel">
+      <p class="section-head">CART ITEMS // {{ cart|length }} PRODUCTS</p>
+
+      {% for item in cart %}
+      <div class="cart-item">
+        <div class="cart-item-grid">
+          <div class="item-icon">
+            {% if item.icon=='book' %}📚{% elif item.icon=='pen' %}✏️{% elif item.icon=='backpack' %}🎒{% elif item.icon=='bottle' %}💧{% elif item.icon=='mouse' %}🖱️{% elif item.icon=='keyboard' %}⌨️{% elif item.icon=='hub' %}🔌{% elif item.icon=='headphone' %}🎧{% elif item.icon=='stand' %}🗜️{% elif item.icon=='camera' %}📷{% elif item.icon=='lamp' %}💡{% elif item.icon=='monitor' %}🖥️{% elif item.icon=='note' %}🗒️{% elif item.icon=='wallet' %}👛{% elif item.icon=='glasses' %}🕶️{% elif item.icon=='shoe' %}👟{% elif item.icon=='mat' %}🧘{% elif item.icon=='dumbbell' %}🏋️{% elif item.icon=='band' %}🫁{% elif item.icon=='speaker' %}🔊{% elif item.icon=='battery' %}🔋{% elif item.icon=='charger' %}⚡{% elif item.icon=='watch' %}⌚{% elif item.icon=='earbuds' %}🎵{% elif item.icon=='light' %}💡{% elif item.icon=='tablet' %}📱{% elif item.icon=='bag' %}👜{% elif item.icon=='cube' %}📦{% elif item.icon=='diffuser' %}🌿{% elif item.icon=='candle' %}🕯️{% elif item.icon=='plant' %}🪴{% elif item.icon=='mug' %}☕{% elif item.icon=='coffee' %}☕{% elif item.icon=='fryer' %}🍳{% elif item.icon=='blender' %}🌀{% elif item.icon=='knife' %}🔪{% elif item.icon=='puzzle' %}🧩{% elif item.icon=='chess' %}♟️{% elif item.icon=='plug' %}🔌{% elif item.icon=='ssd' %}💾{% elif item.icon=='cream' %}🧴{% elif item.icon=='serum' %}💊{% elif item.icon=='roller' %}🎰{% elif item.icon=='mask' %}😷{% else %}📦{% endif %}
+          </div>
+          <div class="item-info">
+            <p class="item-cat">{{ item.category|upper }}{% if item.badge %}<span class="item-badge {% if item.badge=='NEW' %}new{% elif item.badge=='HOT' %}hot{% endif %}">{{ item.badge }}</span>{% endif %}</p>
+            <p class="item-name">{{ item.name }}</p>
+            <div class="item-price-row">
+              <span class="item-price">₹{{ item.price|int }}</span>
+              {% if item.discount > 0 %}
+              <span class="item-orig">₹{{ item.orig_price|int if item.orig_price else '' }}</span>
+              <span class="item-disc">{{ item.discount }}% OFF</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="item-controls">
+            <div class="item-subtotal">₹{{ item.subtotal|int }}</div>
+            <div class="qty-row">
+              <a href="/update/{{ item.product_id }}/dec" class="qty-btn">−</a>
+              <span class="qty-val">{{ item.qty }}</span>
+              <a href="/update/{{ item.product_id }}/inc" class="qty-btn">+</a>
+            </div>
+            <a href="/remove/{{ item.product_id }}" class="remove-btn">🗑 REMOVE</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div style="display:flex;justify-content:flex-end;margin-top:.5rem">
+        <a href="/clear" class="clear-btn" onclick="return confirm('Clear entire cart?')">🗑 CLEAR CART</a>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="summary-panel">
+      <p class="summary-title">ORDER SUMMARY</p>
+
+      <div class="summary-row">
+        <span class="lbl">SUBTOTAL ({{ cart_count }} ITEMS)</span>
+        <span class="val">₹{{ total|int }}</span>
+      </div>
+      {% if saved > 0 %}
+      <div class="summary-row discount">
+        <span class="lbl">DISCOUNT SAVINGS</span>
+        <span class="val">−₹{{ saved|int }}</span>
+      </div>
+      {% endif %}
+      <div class="summary-row">
+        <span class="lbl">GST (18%)</span>
+        <span class="val">₹{{ gst|int }}</span>
+      </div>
+      <div class="summary-row delivery">
+        <span class="lbl">DELIVERY</span>
+        <span class="val">{% if free_delivery %}FREE 🎉{% else %}₹{{ delivery }}{% endif %}</span>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-total">
+        <span class="lbl">TOTAL PAYABLE</span>
+        <span class="amt"><sup>₹</sup>{{ grand_total|int }}</span>
+      </div>
+
+      {% if saved > 0 %}
+      <div class="saved-tag">🎉 YOU SAVE ₹{{ saved|int }} ON THIS ORDER!</div>
+      {% endif %}
+
+      <a href="/checkout" class="btn-checkout">⚡ PROCEED TO CHECKOUT</a>
+      <a href="/" class="btn-continue">← CONTINUE SHOPPING</a>
+
+      <div class="trust-badges">
+        <span class="trust-badge">✓ SECURE PAYMENT</span>
+        <span class="trust-badge">✓ EASY RETURNS</span>
+        <span class="trust-badge">✓ FAST DELIVERY</span>
+        <span class="trust-badge">✓ GST INVOICE</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">🛒</div>
+  <h2>CART IS EMPTY</h2>
+  <p>YOUR CART HAS NO ITEMS YET<br>GO BROWSE THE CATALOG AND ADD SOMETHING!</p>
+  <a href="/" class="btn-shop">EXPLORE CATALOG</a>
+</div>
+{% endif %}
+
+<footer>NEXUS MARKET SYSTEMS &mdash; {{ year }}</footer>
+</body>
+</html>
