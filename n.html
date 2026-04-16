@@ -1,0 +1,223 @@
+from IPython.display import display, HTML
+
+html = """
+<style>
+body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #eef2f7; color: #16213e; }
+.wrapper { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; box-shadow: 0 20px 45px rgba(0,0,0,0.08); border-radius: 18px; }
+.header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+.header h1 { margin: 0; font-size: 2rem; }
+.controls { display: flex; gap: 12px; flex-wrap: wrap; }
+.controls input, .controls select { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 12px; outline: none; }
+.section { margin-top: 28px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 18px; margin-top: 18px; }
+.card { background: linear-gradient(135deg, #ffffff, #f7fafc); border: 1px solid #e2e8f0; border-radius: 18px; padding: 20px; }
+.card h3 { margin: 0 0 12px; font-size: 1.05rem; color: #0f172a; }
+.card p { margin: 6px 0; color: #475569; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 18px; }
+.form-panel { background: #f8fafc; padding: 22px; border-radius: 18px; border: 1px solid #e2e8f0; }
+.form-panel h2 { margin-top: 0; }
+.form-panel label { display: block; margin-bottom: 6px; font-weight: 600; color: #334155; }
+.form-panel input, .form-panel select { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 12px; margin-bottom: 14px; }
+.form-panel button { width: 100%; padding: 12px 16px; border: none; border-radius: 12px; background: #2563eb; color: white; font-weight: 700; cursor: pointer; }
+.form-panel button:hover { background: #1d4ed8; }
+.table-container { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+thead th { text-align: left; padding: 14px 12px; background: #eef2ff; border-bottom: 1px solid #cbd5e1; color: #0f172a; }
+tbody tr { border-bottom: 1px solid #e2e8f0; }
+tbody td { padding: 12px; color: #334155; }
+.badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 0.85rem; color: #fff; }
+.badge.student { background: #2563eb; }
+.badge.teacher { background: #16a34a; }
+.badge.active { background: #059669; }
+.badge.pending { background: #eab308; }
+</style>
+
+<div class="wrapper">
+    <div class="header">
+        <div>
+            <h1>School Registration Dashboard</h1>
+            <p>Register students and teachers, then explore the roster with search and filter options.</p>
+        </div>
+        <div class="controls">
+            <input id="searchInput" type="text" placeholder="Search by name, email, program, subject" />
+            <select id="roleFilter">
+                <option value="all">All roles</option>
+                <option value="Student">Students</option>
+                <option value="Teacher">Teachers</option>
+            </select>
+            <select id="statusFilter">
+                <option value="all">All statuses</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="card-grid">
+            <div class="card">
+                <h3>Total Registrations</h3>
+                <p id="totalCount">0</p>
+            </div>
+            <div class="card">
+                <h3>Students</h3>
+                <p id="studentCount">0</p>
+            </div>
+            <div class="card">
+                <h3>Teachers</h3>
+                <p id="teacherCount">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section form-grid">
+        <div class="form-panel">
+            <h2>Register New Person</h2>
+            <label for="roleInput">Role</label>
+            <select id="roleInput">
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+            </select>
+            <label for="nameInput">Full Name</label>
+            <input id="nameInput" type="text" placeholder="Jane Doe" />
+            <label for="emailInput">Email</label>
+            <input id="emailInput" type="email" placeholder="jane@example.com" />
+            <div id="studentFields">
+                <label for="programInput">Program / Grade</label>
+                <input id="programInput" type="text" placeholder="Biology, 12th grade" />
+            </div>
+            <div id="teacherFields" style="display:none;">
+                <label for="subjectInput">Subject</label>
+                <input id="subjectInput" type="text" placeholder="Mathematics" />
+            </div>
+            <label for="statusInput">Status</label>
+            <select id="statusInput">
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+            </select>
+            <button id="registerBtn">Add Registration</button>
+        </div>
+        <div class="form-panel">
+            <h2>Roster Preview</h2>
+            <p>The roster updates instantly as you add new entries and apply search/filter options.</p>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Role</th><th>Name</th><th>Program / Subject</th><th>Email</th><th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const registrations = [
+    { id: 1, role: "Student", name: "Alicia Reyes", detail: "Physics 11", email: "alicia.reyes@example.com", status: "Active" },
+    { id: 2, role: "Teacher", name: "Noah Patel", detail: "Computer Science", email: "noah.patel@example.com", status: "Active" },
+    { id: 3, role: "Student", name: "Mia Zhang", detail: "Biology 10", email: "mia.zhang@example.com", status: "Pending" },
+    { id: 4, role: "Teacher", name: "Priya Nair", detail: "English Literature", email: "priya.nair@example.com", status: "Active" },
+    { id: 5, role: "Student", name: "Oliver Chen", detail: "Mathematics 12", email: "oliver.chen@example.com", status: "Active" },
+    { id: 6, role: "Teacher", name: "Samuel Kim", detail: "World History", email: "samuel.kim@example.com", status: "Pending" },
+    { id: 7, role: "Student", name: "Sophia Williams", detail: "Chemistry 9", email: "sophia.williams@example.com", status: "Active" },
+    { id: 8, role: "Teacher", name: "Lena Fischer", detail: "Art & Design", email: "lena.fischer@example.com", status: "Active" }
+];
+
+const searchInput = document.getElementById("searchInput");
+const roleFilter = document.getElementById("roleFilter");
+const statusFilter = document.getElementById("statusFilter");
+const registrationTable = document.getElementById("registrationTable");
+const totalCount = document.getElementById("totalCount");
+const studentCount = document.getElementById("studentCount");
+const teacherCount = document.getElementById("teacherCount");
+const roleInput = document.getElementById("roleInput");
+const studentFields = document.getElementById("studentFields");
+const teacherFields = document.getElementById("teacherFields");
+const registerBtn = document.getElementById("registerBtn");
+
+function renderLists() {
+    const filtered = registrations.filter(entry => {
+        const searchText = searchInput.value.trim().toLowerCase();
+        const matchesSearch = !searchText || [entry.name, entry.email, entry.detail, entry.role].some(value => value.toLowerCase().includes(searchText));
+        const matchesRole = roleFilter.value === "all" || entry.role === roleFilter.value;
+        const matchesStatus = statusFilter.value === "all" || entry.status === statusFilter.value;
+        return matchesSearch && matchesRole && matchesStatus;
+    });
+
+    registrationTable.innerHTML = filtered.map(entry => `
+        <tr>
+            <td><span class="badge ${entry.role.toLowerCase()}">${entry.role}</span></td>
+            <td>${entry.name}</td>
+            <td>${entry.detail}</td>
+            <td>${entry.email}</td>
+            <td><span class="badge ${entry.status.toLowerCase()}">${entry.status}</span></td>
+        </tr>
+    `).join("");
+
+    totalCount.textContent = registrations.length;
+    studentCount.textContent = registrations.filter(e => e.role === "Student").length;
+    teacherCount.textContent = registrations.filter(e => e.role === "Teacher").length;
+}
+
+function updateFieldVisibility() {
+    if (roleInput.value === "Teacher") {
+        studentFields.style.display = "none";
+        teacherFields.style.display = "block";
+    } else {
+        studentFields.style.display = "block";
+        teacherFields.style.display = "none";
+    }
+}
+
+function addRegistration() {
+    const name = document.getElementById("nameInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
+    const status = document.getElementById("statusInput").value;
+    const role = roleInput.value;
+    const detail = role === "Teacher" ? document.getElementById("subjectInput").value.trim() : document.getElementById("programInput").value.trim();
+
+    if (!name || !email || !detail) {
+        alert("Please complete all required fields before adding a registration.");
+        return;
+    }
+
+    registrations.push({
+        id: registrations.length + 1,
+        role,
+        name,
+        detail,
+        email,
+        status
+    });
+
+    document.getElementById("nameInput").value = "";
+    document.getElementById("emailInput").value = "";
+    document.getElementById("programInput").value = "";
+    document.getElementById("subjectInput").value = "";
+    renderLists();
+}
+
+searchInput.addEventListener("input", renderLists);
+roleFilter.addEventListener("change", renderLists);
+statusFilter.addEventListener("change", renderLists);
+roleInput.addEventListener("change", updateFieldVisibility);
+registerBtn.addEventListener("click", addRegistration);
+
+updateFieldVisibility();
+renderLists();
+</script>
+"""
+
+display(HTML(html))
+registrations.push(
+    { id: 9, role: "Student", name: "Captain Obvious", detail: "Stating the Obvious 101", email: "captain.obvious@example.com", status: "Active" },
+    { id: 10, role: "Teacher", name: "Dr. Procrastination", detail: "Time Management (Delayed)", email: "dr.procrastination@example.com", status: "Pending" },
+    { id: 11, role: "Student", name: "Pixel McBug", detail: "Debugging 404: Common Sense", email: "pixel.mcbug@example.com", status: "Active" },
+    { id: 12, role: "Teacher", name: "Professor WiFi", detail: "Internet Connectivity Mysteries", email: "prof.wifi@example.com", status: "Active" },
+    { id: 13, role: "Student", name: "Ctrl+Alt+Delete", detail: "IT Support 999", email: "ctrl.alt@example.com", status: "Pending" },
+    { id: 14, role: "Teacher", name: "Mr. Recursion", detail: "See: Mr. Recursion", email: "mr.recursion@example.com", status: "Active" }
+);
+renderLists();

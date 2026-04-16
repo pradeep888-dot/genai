@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+        
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Student Registration Form</h1>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <div class="error" id="nameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="class">Class:</label>
+                <select id="class" name="class" required>
+                    <option value="">Select Class</option>
+                    <option value="9">Class 9</option>
+                    <option value="10">Class 10</option>
+                    <option value="11">Class 11</option>
+                    <option value="12">Class 12</option>
+                </select>
+                <div class="error" id="classError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone No:</label>
+                <input type="tel" id="phone" name="phone" required>
+                <div class="error" id="phoneError"></div>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.getElementById('nameError').textContent = '';
+            document.getElementById('classError').textContent = '';
+            document.getElementById('phoneError').textContent = '';
+
+            // Validate Name
+            const name = document.getElementById('name').value.trim();
+            if (name.length < 3) {
+                document.getElementById('nameError').textContent = 'Name must be at least 3 characters';
+                return;
+            }
+
+            // Validate Class
+            const className = document.getElementById('class').value;
+            if (className === '') {
+                document.getElementById('classError').textContent = 'Please select a class';
+                return;
+            }
+
+            // Validate Phone
+            const phone = document.getElementById('phone').value.trim();
+            if (!/^\d{10}$/.test(phone)) {
+                document.getElementById('phoneError').textContent = 'Phone number must be 10 digits';
+                return;
+            }
+
+            alert('Registration Successful!\nName: ' + name + '\nClass: ' + className + '\nPhone: ' + phone);
+            form.reset();
+        });
+    </script>
+</body>
+</html>
